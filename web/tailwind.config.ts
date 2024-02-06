@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import defaultTheme from 'tailwindcss/defaultTheme'
 
 const config = {
   darkMode: ['class'],
@@ -16,6 +17,14 @@ const config = {
       screens: {
         '2xl': '1400px',
       },
+    },
+    fontFamily: {
+      sans: [
+        'var(--font-inter)',
+        'var(--font-noto-sans-jp)',
+        ...defaultTheme.fontFamily.sans,
+      ],
+      serif: ['var(--font-merriweather)', ...defaultTheme.fontFamily.serif],
     },
     extend: {
       colors: {
