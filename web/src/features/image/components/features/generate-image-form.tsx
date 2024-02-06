@@ -30,6 +30,7 @@ import { ModelSelect } from '@/features/model/components/model-select'
 import { SamplerSelect } from '@/features/sampler/components/sampler-select'
 import { client } from '@/lib/client'
 import { ImagePlusIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { ComponentProps, useState } from 'react'
 
 const formSchema = generateImageSchema.extend({
@@ -66,6 +67,8 @@ type Props = {
 
 export function GenerateImageForm(props: Props) {
   const [isLoading, setIsLoading] = useState(false)
+
+  const router = useRouter()
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -108,13 +111,13 @@ export function GenerateImageForm(props: Props) {
     setIsLoading(true)
 
     try {
-      const result = await client.api.images.generate
+      await client.api.images.generate
         .$post({
           json: rest,
         })
         .then((res) => res.json())
 
-      console.log(result)
+      router.refresh()
     } catch (e) {
       console.error(e)
     } finally {

@@ -2,6 +2,7 @@ import * as fs from 'fs'
 import path from 'node:path'
 import { client } from '@/api/stable-diffusion/client'
 import { generateImageSchema } from '@/features/image/components/validations/generate-image-schema'
+import { prisma } from '@/lib/prisma'
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 
@@ -33,6 +34,17 @@ const route = app
     const result = await client.GET('/sdapi/v1/loras')
     return c.json(result as { data: { name: string }[] })
   })
+  .get('/jobs', async (c) => {
+    const jobs = await prisma.job.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        Image: true,
+      },
+    })
+    return c.json(jobs)
+  })
   .post(
     '/images/generate',
     zValidator('json', generateImageSchema),
@@ -60,17 +72,33 @@ const route = app
         },
       })
 
-      if (!result.data?.images) {
-        throw new Error('failed to generate image')
-      }
-
       const now = new Date()
 
-      const images = result.data.images.map((image, index) => {
-        const filename = `${now.getTime()}_${index}.png`
-        const filepath = `public/images/${filename}`
-        fs.writeFileSync(path.join(process.cwd(), filepath), image, 'base64')
-        return filename
+      const images = prisma.$transaction(async (tx) => {
+        if (!result.data?.images) {
+          throw new Error('failed to generate image')
+        }
+
+        const job = await tx.job.create({
+          data: {},
+        })
+
+        const promises = result.data.images?.map(async (image, index) => {
+          const filename = `${now.getTime()}_${index}.png`
+          const filepath = `images/${filename}`
+          const fullpath = path.join(process.cwd(), 'public', filepath)
+
+          fs.writeFileSync(fullpath, image, 'base64')
+
+          return tx.image.create({
+            data: {
+              jobId: job.id,
+              path: filepath,
+            },
+          })
+        })
+
+        return await Promise.all(promises)
       })
 
       return c.json(images)
