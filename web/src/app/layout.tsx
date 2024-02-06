@@ -1,5 +1,6 @@
 import { Logo } from '@/components/logo'
 import { MobileGuard } from '@/components/mobile-guard'
+import { ProgressStatus } from '@/features/progress/components/progress-status'
 import { cn } from '@/lib/utils'
 import type { Metadata } from 'next'
 import { Inter, Merriweather, Noto_Sans_JP } from 'next/font/google'
@@ -44,6 +45,7 @@ export default function RootLayout({
         <MobileGuard>
           <header className={'fixed z-10 flex items-center gap-4 py-4 px-6'}>
             <Logo />
+            <ProgressStatus />
           </header>
 
           <main>{children}</main>
