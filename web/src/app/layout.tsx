@@ -3,6 +3,7 @@ import { MobileGuard } from '@/components/mobile-guard'
 import { cn } from '@/lib/utils'
 import type { Metadata } from 'next'
 import { Inter, Merriweather, Noto_Sans_JP } from 'next/font/google'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 const inter = Inter({
@@ -47,6 +48,8 @@ export default function RootLayout({
 
           <main>{children}</main>
         </MobileGuard>
+
+        <Toaster />
       </body>
     </html>
   )

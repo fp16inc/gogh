@@ -32,6 +32,7 @@ import { client } from '@/lib/client'
 import { ImagePlusIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { ComponentProps, useState } from 'react'
+import { toast } from 'sonner'
 
 const formSchema = generateImageSchema.extend({
   size: z.union([
@@ -117,9 +118,14 @@ export function GenerateImageForm(props: Props) {
         })
         .then((res) => res.json())
 
+      form.reset()
+      toast.success('画像生成が完了しました')
+
       router.refresh()
     } catch (e) {
-      console.error(e)
+      toast.success('画像生成に失敗しました', {
+        description: e instanceof Error ? e.message : '不明なエラーです',
+      })
     } finally {
       setIsLoading(false)
     }
