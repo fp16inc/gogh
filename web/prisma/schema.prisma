@@ -11,7 +11,20 @@ datasource db {
 }
 
 model Job {
-  id        Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
+  model             String
+  prompt            String
+  negativePrompt    String @map("negative_prompt")
+  cfgScale          Float  @map("cfg_scale")
+  steps             Float
+  samplerName       String @map("sampler_name")
+  width             Float
+  height            Float
+  denoisingStrength Float  @map("denoising_strength")
+  scale             Float
+  batchSize         Float  @map("batch_size")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

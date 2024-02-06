@@ -5,6 +5,7 @@ import { generateImageSchema } from '@/features/image/components/validations/gen
 import { prisma } from '@/lib/prisma'
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
+import { revalidatePath } from 'next/cache'
 
 const app = new Hono().basePath('/api')
 
@@ -80,7 +81,19 @@ const route = app
         }
 
         const job = await tx.job.create({
-          data: {},
+          data: {
+            model: json.model,
+            prompt: json.prompt,
+            negativePrompt: json.negativePrompt,
+            cfgScale: json.cfgScale,
+            steps: json.steps,
+            samplerName: json.samplerName,
+            width: json.width,
+            height: json.height,
+            denoisingStrength: json.denoisingStrength,
+            scale: json.scale,
+            batchSize: json.batchSize,
+          },
         })
 
         const promises = result.data.images?.map(async (image, index) => {
@@ -100,6 +113,8 @@ const route = app
 
         return await Promise.all(promises)
       })
+
+      revalidatePath('/')
 
       return c.json(images)
     },
