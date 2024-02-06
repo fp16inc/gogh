@@ -214,7 +214,7 @@ export function GenerateImageForm(props: Props) {
 
             <FormField
               control={form.control}
-              name={'model'}
+              name={'samplerName'}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className={'text-xs'}>サンプラー</FormLabel>
@@ -223,7 +223,6 @@ export function GenerateImageForm(props: Props) {
                       samplers={props.samplers}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      value={field.value}
                     />
                   </FormControl>
                   <FormMessage />
